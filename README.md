@@ -4,7 +4,7 @@
 
 **Live report:** https://claude.ai/artifact/1KJzmLteTKNPYHVLYaLqLb (same sanitized content as [`index.html`](index.html))
 
-> **Confidentiality note.** This repository is a sanitized write-up of work done on a private company codebase. The company ("MedLink"), teammates ("Aaron Brooks", "Jason Goh"), tickets (`MOB-101`, `PLT-101`, ...), commits (`c001`, ...), PRs (`PR-01`, ...), database tables, files, and code identifiers are all stand-in names that map to the real items. Counts are rounded to show rough scale. No source code, customer data, or real identifiers from the original repository are included, and they remain confidential.
+> **Confidentiality note.** Nothing here uses a real person's name or a real ticket number, but the intellectual ideas are mine and were created by me.
 
 A Paxel-style profile of the backend I built as a new hire: one search and profile API over six kinds of healthcare contacts, built for a greenfield mobile CRM app while two frontend engineers built the UI on top of it.
 
