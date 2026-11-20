@@ -112,6 +112,10 @@ svg text { fill: var(--muted); font-family: var(--f-mono); font-size: 11px; }
 .pipeline span.step { background: var(--accent-soft); color: var(--accent); padding: 5px 9px; border-radius: 6px; }
 .pipeline span.arr { color: var(--muted); }
 footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; }
+.tile .h { font-family: var(--f-display); font-size: 19px; font-weight: 700; line-height: 1.25; }
+.pane-label { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+ul.outcomes { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: var(--muted); }
+ul.outcomes b, ul.clean b { color: var(--ink); }
 </style>
 
 <div class="wrap">
@@ -120,7 +124,7 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; 
   <span class="eyebrow">Builder profile · backend · mobile CRM</span>
   <div class="notice" role="note"><b>Confidentiality note.</b> Nothing here uses a real person's name or a real ticket number, but the intellectual ideas are mine and were created by me.</div>
   <h1>If I were to build a unified contact search for a mobile CRM</h1>
-  <p class="lede">One search and profile endpoint over six kinds of healthcare contacts, built as a new hire for a greenfield mobile app. This profile reads the shipped code and its git history, scoring the work the way Paxel scores a builder: engineering depth, product iteration, simplification, verification, and planning.</p>
+  <p class="lede">One search and profile endpoint over every kind of healthcare contact, built as a new hire for a greenfield mobile app. This profile reads the shipped code and its git history and focuses on the system design and its impact, along the lines Paxel uses to read a builder: engineering depth, product iteration, simplification, verification, and planning.</p>
   <div class="meta">
     <span>Builder <b>Chunchun Wu</b></span>
     <span>Window <b>Jan → Apr 2025</b></span>
@@ -130,20 +134,20 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; 
 </header>
 
 <section class="stack">
-  <span class="eyebrow">At a glance</span>
+  <span class="eyebrow">Impact</span>
   <div class="tiles">
-    <div class="tile"><span class="n">~27</span><span class="l">merged PRs on the search stack, covering ~25 tickets</span><span class="src">git log --author, core files</span></div>
-    <div class="tile"><span class="n">~+12k / −4k</span><span class="l">lines changed; deletions roughly a third of additions</span><span class="src">git log --shortstat</span></div>
-    <div class="tile"><span class="n">~90%</span><span class="l">of the ~8.5k lines still in the stack are yours</span><span class="src">git blame -w, core files</span></div>
-    <div class="tile"><span class="n">120+</span><span class="l">test cases; about 2 test lines for every production line</span><span class="src">~5k test / ~2.6k prod lines</span></div>
-    <div class="tile"><span class="n">6 · ~7 · ~14</span><span class="l">contact types · Postgres tables joined · link pairs</span><span class="src">search DAO, access guard</span></div>
-    <div class="tile"><span class="n">8 wks</span><span class="l">from start date to first core PR on an unfamiliar codebase</span><span class="src">start date → first core PR</span></div>
+    <div class="tile"><span class="h">One search for every contact</span><span class="l">Reps find patients, caregivers, prescribers, clinics, office staff, and program contacts from a single search box instead of separate lookups.</span></div>
+    <div class="tile"><span class="h">Permission-safe by design</span><span class="l">Access is resolved before any SQL is built, so hidden records never leak through results, counts, or paging.</span></div>
+    <div class="tile"><span class="h">HIPAA masking in one place</span><span class="l">Masking happens at the source with shared sentinels, so the backend and the mobile app always agree on what is hidden.</span></div>
+    <div class="tile"><span class="h">The UI was never blocked</span><span class="l">Each backend layer landed before the mobile screen that needed it, so frontend work kept moving in parallel.</span></div>
+    <div class="tile"><span class="h">A contract that evolved safely</span><span class="l">Additive changes and staged deprecations let the API change while the app was being built on it.</span></div>
+    <div class="tile"><span class="h">Ownership as a new hire</span><span class="l">Learned a multi-tenant, regulated platform through smaller fixes, then took ownership of the backend for a new product area.</span></div>
   </div>
 </section>
 
 <section class="stack">
   <span class="eyebrow">Context</span>
-  <h2>What was built, and for whom</h2>
+  <h2>What I'd build</h2>
   <p>The mobile CRM lets field reps look up anyone tied to a patient program from a phone: patients, their caregivers, prescribers (HCPs), clinics and hospitals (HCOs), provider office staff, and program-level contacts. Before this work each entity had its own store and its own query shape. The unified API turns them into one ranked, paginated, permission-checked, HIPAA-masked search, plus a profile view and a paginated "linked contacts" view.</p>
   <div class="pipeline" aria-label="Query pipeline">
     <span class="step">GraphQL resolver</span><span class="arr">→</span>
@@ -155,21 +159,13 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; 
     <span class="step">attach links</span><span class="arr">→</span>
     <span class="step">mask + convert</span>
   </div>
-  <p>Three GraphQL queries ship from one Lambda: <code>lookupContacts</code>, <code>contactDetails</code>, and <code>contactAssociations</code>. Two frontend engineers, Aaron Brooks and Jason Goh, built the mobile UI on top of the API at the same time, so the contract had to stay usable while it was still changing.</p>
+  <p>Search, profile, and linked-contacts queries ship from one Lambda: <code>lookupContacts</code>, <code>contactDetails</code>, and <code>contactAssociations</code>. Two frontend engineers, Aaron Brooks and Jason Goh, built the mobile UI on top of the API at the same time, so the contract had to stay usable while it was still changing.</p>
 </section>
 
 <section class="stack">
   <span class="eyebrow">Team scope</span>
   <h2>Backend and frontend moved in parallel</h2>
-  <div class="chart-card">
-    <div class="legend">
-      <span><i style="background:var(--s-you)"></i>You · search backend (~27 commits)</span>
-      <span><i style="background:var(--s-a)"></i>Aaron Brooks · mobile UI (~40 commits, ~+7k lines)</span>
-      <span><i style="background:var(--s-j)"></i>Jason Goh · mobile UI (~40 commits, ~+7k lines)</span>
-    </div>
-    <div class="chart-scroll"><svg id="cadence" viewBox="0 0 640 250" width="100%" style="min-width:520px" role="img" aria-label="Commits per month, December 2024 to April 2025"></svg></div>
-    <p style="font-size:13px;color:var(--muted)">Commits per month. Your backend commits peak in February, the month the UI team started consuming search, profiles, and links. Frontend counts are commits touching the mobile UI and contact query folders.</p>
-  </div>
+  <p>Each backend change was sequenced to unblock a specific piece of the mobile UI.</p>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Backend change (you)</th><th>Date</th><th>Frontend work it unblocked</th><th>Date</th></tr></thead>
@@ -189,8 +185,8 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; 
 
 <section class="stack">
   <span class="eyebrow">Dimensions</span>
-  <h2>How the work scores</h2>
-  <p>Each panel pairs the measurable signals with a reading of the code. The pill is the strength of the evidence in the repository, not a self-rating.</p>
+  <h2>How the work reads</h2>
+  <p>Each panel pairs the outcomes with the design actions behind them. The pill is the strength of the evidence in the repository, not a self-rating.</p>
 </section>
 
 <article class="dim">
@@ -200,21 +196,21 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; 
   </div>
   <div class="dim-body">
     <div class="signals">
-      <dl class="kv">
-        <dt>6</dt><dd>contact types behind one API</dd>
-        <dt>7</dt><dd>Postgres tables, relational and JSONB</dd>
-        <dt>14</dt><dd>typed link pairs between types</dd>
-        <dt>6</dt><dd>access modules mapped to types</dd>
-        <dt>~85%</dt><dd>of the DAO lines are yours</dd>
-        <dt>3</dt><dd>GraphQL queries, 1 Lambda</dd>
-      </dl>
+      <span class="pane-label">Outcomes</span>
+      <ul class="outcomes">
+        <li><b>One API for every contact type.</b> The mobile app calls one search, one profile, and one linked-contacts query instead of a different query per entity.</li>
+        <li><b>New types plug in cheaply.</b> Adding a contact type means adding one CTE. Matching, ranking, and paging stay the same.</li>
+        <li><b>Access rules extend without rewrites.</b> A teammate later layered provider-level access restrictions (HC-101) onto the guard without touching the query.</li>
+      </ul>
     </div>
     <div class="reading">
-      <p>The hard part was shape, not volume. Providers and HCOs live in relational tables. Patients live in a JSONB cache. Caregivers are rows inside an address-book array on the patient. You normalized all of them with one CTE per entity that emits the same columns (id, name, last name, external id, type), then ran matching, ranking, paging, and link expansion once over the union.</p>
+      <span class="pane-label">Actions</span>
+      <p>The hard part was shape, not volume. Providers and HCOs live in relational tables, patients live in a JSONB cache, and caregivers are rows inside an address-book array on the patient.</p>
       <ul class="clean">
-        <li>Caregivers have no ID of their own, so you built a composite key (<code>patientId:contactBookId</code>) and moved the delimiter into a shared constant that the SQL <code>split</code> calls and the TypeScript converter both use.</li>
-        <li>Links are modelled as 14 explicit pairs (for example HCP→patient, patient→caregiver). Where the database has no HCO→HCP link, the code reads the HCP→HCO link backwards and says so in a comment.</li>
-        <li>Authorization is a separate <code>ContactAccessGuard</code>. It turns a user's role into allowed types and allowed links before any SQL runs. A teammate later layered provider-level global access restrictions (HC-101) onto this structure in a couple hundred lines.</li>
+        <li><b>Normalized every data shape.</b> One CTE per entity emits the same columns (id, name, last name, external id, type), then matching, ranking, paging, and link expansion run once over the union.</li>
+        <li><b>Gave caregivers a stable identity.</b> Caregivers have no ID of their own, so you built a composite key (<code>patientId:contactBookId</code>) with the delimiter in a shared constant that the SQL <code>split</code> calls and the TypeScript converter both use, so the two can't drift apart.</li>
+        <li><b>Modelled links as explicit pairs.</b> Every link between types (for example HCP→patient, patient→caregiver) is typed. Where the database has no HCO→HCP link, the code reads the HCP→HCO link backwards and says so in a comment.</li>
+        <li><b>Authorized before querying.</b> A separate <code>ContactAccessGuard</code> turns a user's role into allowed types and allowed links before any SQL runs, and the query is built only from what is allowed.</li>
       </ul>
       <div class="evidence"><span>c001 PLT-101</span> · <span>c002 PLT-102</span> · <span>c003 PLT-103</span> · <span>c004 MOB-104</span> · <span>c005 MOB-118</span></div>
     </div>
@@ -228,21 +224,21 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; 
   </div>
   <div class="dim-body">
     <div class="signals">
-      <dl class="kv">
-        <dt>~25</dt><dd>distinct tickets in ~14 weeks</dd>
-        <dt>12</dt><dd>PRs in February, at the UI ramp</dd>
-        <dt>36%</dt><dd>lines deleted per line added</dd>
-        <dt>3</dt><dd>contract changes kept backward compatible</dd>
-        <dt>4</dt><dd>dedicated bug-fix rounds</dd>
-      </dl>
+      <span class="pane-label">Outcomes</span>
+      <ul class="outcomes">
+        <li><b>Search results reps can trust.</b> Exact matches and primary links rise to the top, and hidden patients never sort by a fake value.</li>
+        <li><b>The mobile client never broke.</b> Every contract change shipped backward compatible while the UI was being built on it.</li>
+        <li><b>Cleaner, more relevant results.</b> Archived providers no longer leak into search, and previews show what reps actually need.</li>
+      </ul>
     </div>
     <div class="reading">
-      <p>Requirements kept changing as the mobile UI came together, and the history shows a steady loop: ship, see it in the app, tighten. The ranking is the clearest example. It started as plain matching and ended as a documented three-step order.</p>
+      <span class="pane-label">Actions</span>
+      <p>Requirements kept changing as the mobile UI came together, and the history shows a steady loop: ship, see it in the app, tighten. The ranking is the clearest example. It started as plain matching and ended as a documented, ordered set of rules.</p>
       <ul class="clean">
-        <li><b>Ranking.</b> Case-insensitive order (PR-02), then exact matches first, then last name when one exists (MOB-119), then primary links first (MOB-120). Masked names sort as empty and fall back to external ID, so hidden patients never sort by a fake value.</li>
-        <li><b>Search scope.</b> Added search by external ID (MOB-121). Showed the external ID as the preview subtitle (MOB-110) and dropped addresses from previews (MOB-122).</li>
-        <li><b>Contract hygiene.</b> Trimmed the GraphQL schema (MOB-123), replaced <code>hasNext</code> with the shared <code>Page</code> interface (MOB-102), and retired <code>LegacyContactKind</code> in stages, leaving a "to be deprecated" marker so the mobile client never broke (MOB-124).</li>
-        <li><b>Data correctness.</b> Archived providers leaking into results (MOB-112), faster JSONB archive checks (MOB-125), and an <code>isPrimary</code> flag on associations.</li>
+        <li><b>Refined ranking with real use.</b> Case-insensitive order (PR-02), then exact matches first, then last name when one exists (MOB-119), then primary links first (MOB-120). Masked names sort as empty and fall back to external ID.</li>
+        <li><b>Widened the search scope.</b> Added search by external ID (MOB-121), showed the external ID as the preview subtitle (MOB-110), and dropped addresses from previews (MOB-122).</li>
+        <li><b>Kept the contract clean.</b> Trimmed the GraphQL schema (MOB-123), replaced <code>hasNext</code> with the shared <code>Page</code> interface (MOB-102), and retired <code>LegacyContactKind</code> in stages with a "to be deprecated" marker (MOB-124).</li>
+        <li><b>Fixed data correctness.</b> Stopped archived providers leaking into results (MOB-112), sped up JSONB archive checks (MOB-125), and added an <code>isPrimary</code> flag on associations.</li>
       </ul>
       <div class="evidence"><span>c006 MOB-126/127/128</span> · <span>c007 MOB-129</span> · <span>c008 MOB-121</span> · <span>c009 MOB-124</span> · <span>c010 MOB-119</span> · <span>c011 MOB-120</span></div>
     </div>
@@ -256,19 +252,21 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; 
   </div>
   <div class="dim-body">
     <div class="signals">
-      <dl class="kv">
-        <dt>1</dt><dd>shared constants module, used by both apps</dd>
-        <dt>2</dt><dd>backend-local mask strings removed</dd>
-        <dt>3</dt><dd>teammate PRs adopted it within 4 weeks</dd>
-        <dt>~175</dt><dd>lines deleted from the result processor in MOB-106</dd>
-      </dl>
+      <span class="pane-label">Outcomes</span>
+      <ul class="outcomes">
+        <li><b>One source of truth.</b> Backend and frontend import the same mask constants, so there are no local copies to drift.</li>
+        <li><b>Hidden is never confused with empty.</b> The sentinels can't collide with real data, so the UI reliably detects a masked value.</li>
+        <li><b>Teammates built on it right away.</b> Masked phone and email can't start a call or message (MOB-111), masked values are hidden from contact dropdowns (MSG-101), and the patient profile switched to the shared constants (PR-03).</li>
+      </ul>
     </div>
     <div class="reading">
+      <span class="pane-label">Actions</span>
       <p>Patients without HIPAA consent must show masked values. At first the backend used its own ASCII strings (<code>******</code>, <code>***-***-****</code>) inside the converter, and the web app kept its own mask literals. A real value could collide with the mask, and the UI had no reliable way to tell "hidden" from "empty".</p>
       <ul class="clean">
-        <li>Masking moved into the query: columns are tagged <code>MaskedColumn</code>, so the masked value is produced once, at the source, and paging, sorting, and links all see the same value.</li>
-        <li>The masks moved into <code>@medlink/constants/obfuscation</code>, imported by backend and frontend alike. Each one uses heavy asterisks plus a zero-width space, so no real data can equal it and the UI can detect a masked value with a plain set lookup.</li>
-        <li>Teammates built on it right away: masked phone and email can't start a call or message (Jason, MOB-111), masked values are hidden from contact dropdowns (MSG-101), and the patient profile switched to the shared constants (PR-03).</li>
+        <li><b>Masked at the source.</b> Columns are tagged <code>MaskedColumn</code>, so the masked value is produced once, in the query, and paging, sorting, and links all see the same value.</li>
+        <li><b>Centralized the masks.</b> The masks moved into <code>@medlink/constants/obfuscation</code>, imported by backend and frontend alike.</li>
+        <li><b>Designed collision-proof sentinels.</b> Each mask uses heavy asterisks plus a zero-width space, so no real data can equal it and the UI can detect a masked value with a plain set lookup.</li>
+        <li><b>Removed duplicate masking code.</b> Deleted the converter's local mask strings and the masking logic in the result processor (MOB-106).</li>
       </ul>
       <div class="evidence"><span>c012 PR-01</span> · <span>c013 MOB-110</span> · <span>c014 MOB-106</span> · <span>c015 MOB-111</span> · <span>c016 PR-03</span></div>
     </div>
@@ -282,20 +280,20 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; 
   </div>
   <div class="dim-body">
     <div class="signals">
-      <dl class="kv">
-        <dt>120+</dt><dd>unit and integration cases</dd>
-        <dt>~70</dt><dd>DAO cases against Postgres</dd>
-        <dt>~20</dt><dd>Lambda permission and masking cases</dd>
-        <dt>~2 : 1</dt><dd>test to production lines</dd>
-        <dt>6</dt><dd>Playwright mobile contact tests hit the API</dd>
-        <dt>2</dt><dd>latency timers in the request path</dd>
-      </dl>
+      <span class="pane-label">Outcomes</span>
+      <ul class="outcomes">
+        <li><b>Rules checked against a real database.</b> Every permission and masking rule runs against a Postgres test database, not mocks.</li>
+        <li><b>Mobile flows covered end to end.</b> The mobile Playwright suite exercises the API through real contact flows.</li>
+        <li><b>Latency visible per request.</b> Search time shows up in CloudWatch at both the DAO and resolver layers.</li>
+      </ul>
     </div>
     <div class="reading">
-      <p>Automated testing is the strongest part of this dimension. Every major PR shipped with more test lines than code, and the ~1k-line shared fixture models a realistic tenant (every contact type, patients with and without consent, archived records) so each permission and masking rule is checked against a Postgres test database, not mocks.</p>
+      <span class="pane-label">Actions</span>
+      <p>Automated testing is the strongest part of this dimension. Every major PR shipped with its tests, and more test code than production code overall.</p>
       <ul class="clean">
-        <li><b>End-to-end.</b> The mobile Playwright suite runs six contact flows through your API: patient profile, patient associations, HCO profile, HCP profile, and creating email and SMS from a contact. Teammates wrote those specs. Your own Playwright work is on a later feature (PR-04, PR-05).</li>
-        <li><b>Latency.</b> Search time is logged at the DAO and resolver layers (<code>Timer</code> in MOB-114), which gives per-request numbers in CloudWatch.</li>
+        <li><b>Built a realistic tenant fixture.</b> One shared fixture models every contact type, patients with and without consent, and archived records, so each permission and masking rule is checked against realistic data.</li>
+        <li><b>Covered the mobile flows end to end.</b> The Playwright suite runs patient profile, patient associations, HCO profile, HCP profile, and creating email and SMS from a contact through your API. Teammates wrote those specs. Your own Playwright work is on a later feature (PR-04, PR-05).</li>
+        <li><b>Instrumented latency.</b> Search time is logged at the DAO and resolver layers (<code>Timer</code> in MOB-114).</li>
       </ul>
       <div class="todo">
         <b>Load test results are not in the repository.</b>
@@ -313,15 +311,20 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; 
   </div>
   <div class="dim-body">
     <div class="signals">
-      <dl class="kv">
-        <dt>1 day</dt><dd>from DAO PR to API PR</dd>
-        <dt>1 day</dt><dd>median gap between core PRs (3.8-day mean)</dd>
-        <dt>2</dt><dd>features split into "Part 1" PRs</dd>
-        <dt>0</dt><dd>reverts on the search stack</dd>
-      </dl>
+      <span class="pane-label">Outcomes</span>
+      <ul class="outcomes">
+        <li><b>The UI never waited on the backend.</b> Each layer landed before the screen that needed it.</li>
+        <li><b>Reviews stayed small.</b> Large items were split into "Part 1" PRs that could be reviewed quickly.</li>
+        <li><b>A stable stack.</b> Nothing on the search stack had to be reverted, while the mobile comms area had reverts elsewhere in the same period.</li>
+      </ul>
     </div>
     <div class="reading">
-      <p>The build order kept every step mergeable: data access with tests first, then the API, then pagination, then permissions, then masking, then profiles. Each layer landed before the UI needed it, and large items were split ("Part 1" for MOB-129 and MOB-110) so reviews stayed small. The mobile comms area had reverts elsewhere during this period. The search stack had none.</p>
+      <span class="pane-label">Actions</span>
+      <ul class="clean">
+        <li><b>Built bottom-up.</b> Data access with tests first, then the API, then pagination, then permissions, then masking, then profiles, so every step was mergeable on its own.</li>
+        <li><b>Split large items.</b> "Part 1" PRs for MOB-129 and MOB-110 kept each review focused.</li>
+        <li><b>Shipped in short, steady increments.</b> Core PRs followed each other closely, starting with the API the day after the data layer.</li>
+      </ul>
       <div class="evidence"><span>PLT-101 → PLT-102 → PLT-103 → MOB-102 → MOB-104 → MOB-118 → MOB-106</span></div>
     </div>
   </div>
@@ -331,8 +334,8 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; 
   <span class="eyebrow">Challenges</span>
   <h2>Problems a new hire had to solve</h2>
   <div class="challenges">
-    <div class="ch"><h3>New codebase, healthcare rules</h3><span class="k p">Problem</span><p>A multi-tenant monorepo with per-customer Postgres schemas, DynamoDB, and HIPAA access tiers, learned while the project was starting.</p><span class="k s">Response</span><p>Spent eight weeks on smaller fixes and refactors, then took the backend for a new product area. Roughly 90% of its lines are still yours today.</p></div>
-    <div class="ch"><h3>Six data shapes, one result list</h3><span class="k p">Problem</span><p>Relational rows, JSONB documents, and nested arrays had to rank and page together.</p><span class="k s">Response</span><p>Per-entity CTEs that emit one common row shape, with a composite key for caregivers who had no ID.</p></div>
+    <div class="ch"><h3>New codebase, healthcare rules</h3><span class="k p">Problem</span><p>A multi-tenant monorepo with per-customer Postgres schemas, DynamoDB, and HIPAA access tiers, learned while the project was starting.</p><span class="k s">Response</span><p>Started with smaller fixes and refactors to learn the platform, then took ownership of the backend for a new product area.</p></div>
+    <div class="ch"><h3>Many data shapes, one result list</h3><span class="k p">Problem</span><p>Relational rows, JSONB documents, and nested arrays had to rank and page together.</p><span class="k s">Response</span><p>Per-entity CTEs that emit one common row shape, with a composite key for caregivers who had no ID.</p></div>
     <div class="ch"><h3>Permissions before data</h3><span class="k p">Problem</span><p>Each role sees a different set of types and links. Filtering after the query would leak counts and break paging.</p><span class="k s">Response</span><p>The authorizer decides allowed types and links first, and the SQL is built only from what is allowed.</p></div>
     <div class="ch"><h3>Masking that stays consistent</h3><span class="k p">Problem</span><p>Mask strings defined twice, collision with real data, and sort order based on hidden values.</p><span class="k s">Response</span><p>Masking in SQL, shared sentinel constants, and masked values sorted as empty with an external-ID fallback.</p></div>
     <div class="ch"><h3>A contract under active use</h3><span class="k p">Problem</span><p>Two frontend engineers built on the API while it was still changing.</p><span class="k s">Response</span><p>Staged deprecations, the shared <code>Page</code> interface, and pairing with Jason on the profile endpoint.</p></div>
@@ -341,50 +344,8 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; 
 </section>
 
 <footer>
-  <span>Method: commit counts and line stats come from <code>git log --shortstat</code> on the core files of the search stack plus the shared SQL helpers and masking constants. Ownership comes from <code>git blame -w</code> on the main branch. Numbers are rounded and all identifiers are pseudonyms. Test cases are counted <code>it(</code> and <code>test(</code> calls. Frontend counts are limited to mobile component and contact query paths.</span>
+  <span>Method: the reading comes from the code and git history of the search stack, the shared SQL helpers, and the masking constants on the main branch. All identifiers are pseudonyms.</span>
   <span>Generated 2026-11-18. Ticket and commit references are stand-ins that map one-to-one to real items in the private repository, so the original can be checked on request.</span>
 </footer>
 
 </div>
-
-<script>
-(function () {
-  var svg = document.getElementById('cadence');
-  if (!svg) return;
-  var months = ['Dec 2024', 'Jan 2025', 'Feb 2025', 'Mar 2025', 'Apr 2025'];
-  var series = [
-    { key: '--s-you', data: [0, 7, 12, 6, 2] },
-    { key: '--s-a', data: [5, 6, 14, 11, 6] },
-    { key: '--s-j', data: [3, 7, 13, 16, 3] }
-  ];
-  var NS = 'http://www.w3.org/2000/svg';
-  var left = 40, right = 628, top = 16, bottom = 214, max = 16;
-  var h = bottom - top, groupW = (right - left) / months.length, barW = 22, gap = 4;
-  function el(name, attrs, text) {
-    var n = document.createElementNS(NS, name);
-    Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); });
-    if (text !== undefined) n.textContent = text;
-    svg.appendChild(n);
-    return n;
-  }
-  [0, 4, 8, 12, 16].forEach(function (v) {
-    var y = bottom - (v / max) * h;
-    el('line', { x1: left, x2: right, y1: y, y2: y, stroke: 'var(--rule)', 'stroke-width': 1, fill: 'none' });
-    el('text', { x: left - 8, y: y + 4, 'text-anchor': 'end' }, String(v));
-  });
-  months.forEach(function (m, i) {
-    var gx = left + i * groupW;
-    var total = series.length * barW + (series.length - 1) * gap;
-    var x0 = gx + (groupW - total) / 2;
-    series.forEach(function (s, j) {
-      var v = s.data[i];
-      var bh = (v / max) * h;
-      var x = x0 + j * (barW + gap);
-      var r = el('rect', { x: x, y: bottom - bh, width: barW, height: Math.max(bh, 0), rx: 2, fill: 'var(' + s.key + ')' });
-      var t = document.createElementNS(NS, 'title'); t.textContent = m + ': ' + v + ' commits'; r.appendChild(t);
-      el('text', { x: x + barW / 2, y: bottom - bh - 5, 'text-anchor': 'middle' }, String(v));
-    });
-    el('text', { x: gx + groupW / 2, y: bottom + 20, 'text-anchor': 'middle' }, m);
-  });
-})();
-</script>
