@@ -1,0 +1,354 @@
+<title>Mobile Contact Search Design</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --ink: #16202c;
+  --muted: #5a6676;
+  --rule: #dfe3ea;
+  --accent: #2557c7;
+  --accent-soft: #e6edfb;
+  --ok: #2c7a55;
+  --ok-soft: #e3f2ea;
+  --warn: #9a6512;
+  --warn-soft: #fbf0dc;
+  --bad: #a13a3a;
+  --bad-soft: #f8e5e5;
+  --f-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141b; --surface: #161d27; --ink: #e6ebf2; --muted: #98a3b3; --rule: #2a3442;
+    --accent: #7ea3f5; --accent-soft: #1d2a45;
+    --ok: #6cc39d; --ok-soft: #173327; --warn: #e3b35a; --warn-soft: #3a2c12; --bad: #ef8f8f; --bad-soft: #3a1c1c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141b; --surface: #161d27; --ink: #e6ebf2; --muted: #98a3b3; --rule: #2a3442;
+  --accent: #7ea3f5; --accent-soft: #1d2a45;
+  --ok: #6cc39d; --ok-soft: #173327; --warn: #e3b35a; --warn-soft: #3a2c12; --bad: #ef8f8f; --bad-soft: #3a1c1c;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; display: flex; flex-direction: column; gap: 48px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.08; font-weight: 700; }
+h2 { font-size: 26px; font-weight: 700; }
+h3 { font-size: 19px; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--accent); }
+code, .mono { font-family: var(--f-mono); font-size: 0.86em; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.lede { font-size: 18px; color: var(--muted); }
+header.top { display: flex; flex-direction: column; gap: 16px; border-bottom: 1px solid var(--rule); padding-bottom: 28px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 22px; font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.meta b { color: var(--ink); font-weight: 500; }
+
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+@media (max-width: 760px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 440px) { .tiles { grid-template-columns: 1fr; } }
+.tile { background: var(--surface); padding: 18px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tile .n { font-family: var(--f-display); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.tile .l { font-size: 13px; color: var(--muted); }
+.tile .src { font-family: var(--f-mono); font-size: 11px; color: var(--muted); opacity: 0.85; }
+
+.reqs { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.req { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.req .id { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--accent); }
+.req p { font-size: 14.5px; color: var(--muted); }
+
+.dim { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+.dim-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px 16px; padding: 20px 22px; border-bottom: 1px solid var(--rule); }
+.dim-head .t { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.dim-body { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr); }
+.signals { padding: 20px 22px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 12px; }
+.reading { padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.pane-label { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+@media (max-width: 720px) { .dim-body { grid-template-columns: 1fr; } .signals { border-right: 0; border-bottom: 1px solid var(--rule); } }
+ul.req-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--muted); }
+.pill { font-family: var(--f-mono); font-size: 12px; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+ul.clean { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; max-width: 70ch; }
+ul.clean li::marker { color: var(--muted); }
+.trace { font-family: var(--f-mono); font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 640px; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+td.d { font-family: var(--f-mono); font-size: 12px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+td .who { font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
+
+.challenges { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.ch { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.ch .k { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+.ch .k.p { color: var(--bad); }
+.ch .k.s { color: var(--ok); }
+.ch p { font-size: 14.5px; }
+
+.plan-box { border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; }
+.plan-box b { color: var(--accent); }
+.plan-box dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 14px; }
+.plan-box dt { font-family: var(--f-mono); font-size: 12px; color: var(--ink); white-space: nowrap; }
+.plan-box dd { margin: 0; color: var(--muted); }
+.notice { border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 10px; padding: 14px 16px; font-size: 14px; max-width: 78ch; }
+.notice b { color: var(--accent); }
+.pipeline { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-family: var(--f-mono); font-size: 12px; }
+.pipeline span.step { background: var(--accent-soft); color: var(--accent); padding: 5px 9px; border-radius: 6px; }
+.pipeline span.arr { color: var(--muted); }
+footer { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; }
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <span class="eyebrow">Design exercise · backend · mobile CRM</span>
+  <div class="notice" role="note"><b>Hypothetical scenario.</b> The company, data model, and requirements below are illustrative. Module and type names such as <code>ContactAccessGuard</code>, <code>MaskedColumn</code>, and <code>@app/constants</code> are examples I chose for this write-up. They do not refer to any real system.</div>
+  <h1>If I were to build a unified contact search for a mobile CRM</h1>
+  <p class="lede">A healthcare company is launching a new mobile app for field reps. They need one backend to search and view everyone tied to a patient program. Here is the requirement as I would receive it, and how I would design, build, test, and ship it.</p>
+  <div class="meta">
+    <span>Author <b>Chunchun Wu</b></span>
+    <span>Format <b>requirement → design → plan</b></span>
+    <span>Stack <b>TypeScript · GraphQL · Lambda · Postgres</b></span>
+  </div>
+</header>
+
+<section class="stack">
+  <span class="eyebrow">At a glance</span>
+  <div class="tiles">
+    <div class="tile"><span class="n">6</span><span class="l">contact types behind one search API</span><span class="src">patients to program contacts</span></div>
+    <div class="tile"><span class="n">3</span><span class="l">GraphQL queries served from one Lambda</span><span class="src">search · profile · relations</span></div>
+    <div class="tile"><span class="n">~14</span><span class="l">typed link pairs between contact types</span><span class="src">e.g. HCP → patient</span></div>
+    <div class="tile"><span class="n">1</span><span class="l">place where masking happens, with one shared set of mask constants</span><span class="src">SQL layer + shared package</span></div>
+    <div class="tile"><span class="n">8</span><span class="l">thin slices, each mergeable alone, ordered so the UI is never blocked</span><span class="src">~6 weeks</span></div>
+    <div class="tile"><span class="n">p95 &lt; 300 ms</span><span class="l">search latency target at tenant scale, checked by a load test before launch</span><span class="src">proposed target</span></div>
+  </div>
+</section>
+
+<section class="stack">
+  <span class="eyebrow">The requirement</span>
+  <h2>What the product needs</h2>
+  <p>Field reps need to look up anyone tied to a patient program from a phone: patients, their caregivers, prescribers (HCPs), clinics and hospitals (HCOs), provider office staff, and program-level contacts. Today each type has its own store and its own query shape. The mobile team wants one search box, a profile screen, and a list of linked contacts.</p>
+  <div class="reqs">
+    <div class="req"><span class="id">R1 · SEARCH</span><h3>One ranked search</h3><p>One search box over all six types, ranked sensibly, with paging for infinite scroll.</p></div>
+    <div class="req"><span class="id">R2 · PROFILE</span><h3>Profile and links</h3><p>A profile per contact, plus a paginated list of linked contacts (a patient's caregivers, an HCP's patients, and so on).</p></div>
+    <div class="req"><span class="id">R3 · ACCESS</span><h3>Role-based visibility</h3><p>Each role sees only some types and links. Hidden records must not leak through counts or paging.</p></div>
+    <div class="req"><span class="id">R4 · HIPAA</span><h3>Masking without consent</h3><p>Patients without HIPAA consent show masked values, and the app must not call, text, or email a masked value.</p></div>
+    <div class="req"><span class="id">R5 · DATA</span><h3>Mixed data shapes</h3><p>Providers and HCOs are relational rows. Patients are a JSONB cache. Caregivers are rows inside an array on the patient, with no ID of their own.</p></div>
+    <div class="req"><span class="id">R6 · TEAM</span><h3>Parallel UI build</h3><p>Two frontend engineers build the app at the same time, so the API contract will change while it is in use.</p></div>
+  </div>
+</section>
+
+<section class="stack">
+  <span class="eyebrow">Proposed solution</span>
+  <h2>One pipeline, run once over every type</h2>
+  <div class="pipeline" aria-label="Query pipeline">
+    <span class="step">GraphQL resolver</span><span class="arr">→</span>
+    <span class="step">validate + sanitize</span><span class="arr">→</span>
+    <span class="step">authorize per type</span><span class="arr">→</span>
+    <span class="step">name CTE per entity</span><span class="arr">→</span>
+    <span class="step">match + rank</span><span class="arr">→</span>
+    <span class="step">page</span><span class="arr">→</span>
+    <span class="step">attach links</span><span class="arr">→</span>
+    <span class="step">mask + convert</span>
+  </div>
+  <p>I would ship three GraphQL queries from one Lambda: <code>searchContacts</code>, <code>contactProfile</code>, and <code>contactRelations</code>. Each entity gets its own small CTE that turns its native shape into one common row. Matching, ranking, paging, and link expansion are then written once over the union, not six times. Authorization runs before the SQL is built, and masking happens inside the query, so every later step sees the same values.</p>
+</section>
+
+<section class="stack">
+  <span class="eyebrow">Design decisions</span>
+  <h2>How I would handle each part</h2>
+  <p>Each panel pairs the requirement with the approach. The pill names the main risk that part of the design is meant to remove.</p>
+</section>
+
+<article class="dim">
+  <div class="dim-head">
+    <div class="t"><span class="eyebrow">01 · Engineering</span><h3>One query over six data shapes</h3></div>
+    <span class="pill warn">Risk · six code paths</span>
+  </div>
+  <div class="dim-body">
+    <div class="signals">
+      <span class="pane-label">Requirement</span>
+      <ul class="req-list">
+        <li>6 contact types in relational rows, JSONB, and nested arrays (R5)</li>
+        <li>~14 link pairs between types (R2)</li>
+        <li>Different allowed types and links per role (R3)</li>
+      </ul>
+    </div>
+    <div class="reading">
+      <span class="pane-label">How I'd solve it</span>
+      <p>The hard part is shape, not volume. I would write one CTE per entity that emits the same columns: id, display name, last name, external id, and type. Everything after that runs once over the union.</p>
+      <ul class="clean">
+        <li><b>Caregivers without IDs.</b> Build a composite key (<code>patientId:contactBookId</code>). Keep the delimiter in one shared constant, used by both the SQL <code>split</code> and the TypeScript converter, so the two can never drift apart.</li>
+        <li><b>Links as explicit pairs.</b> Model the ~14 links as a typed list (HCP→patient, patient→caregiver, and so on). Where the database only stores one direction, such as HCP→HCO, read it backwards for HCO→HCP and document that in code.</li>
+        <li><b>Authorization first.</b> A separate <code>ContactAccessGuard</code> turns the user's role into allowed types and allowed links before any SQL is built. Later rules, such as provider-level access limits, plug into the guard without touching the query.</li>
+      </ul>
+      <div class="trace">Covers R2 · R3 · R5</div>
+    </div>
+  </div>
+</article>
+
+<article class="dim">
+  <div class="dim-head">
+    <div class="t"><span class="eyebrow">02 · Product instinct and execution</span><h3>Plan for the requirements to move</h3></div>
+    <span class="pill warn">Risk · contract churn</span>
+  </div>
+  <div class="dim-body">
+    <div class="signals">
+      <span class="pane-label">Requirement</span>
+      <ul class="req-list">
+        <li>"Sensible" ranking, which will be defined by using the app (R1)</li>
+        <li>A contract that two engineers build on while it changes (R6)</li>
+        <li>Likely follow-ups: search by external ID, preview subtitle, hiding archived records</li>
+      </ul>
+    </div>
+    <div class="reading">
+      <span class="pane-label">How I'd solve it</span>
+      <p>Requirements will change once the UI is in reps' hands. The design should make the expected changes cheap: ship, watch it in the app, tighten.</p>
+      <ul class="clean">
+        <li><b>Ranking as a documented, ordered list.</b> Start with case-insensitive matching, then add exact matches first, last name when one exists, and primary links first. Masked names sort as empty and fall back to external ID, so hidden patients never sort by a fake value.</li>
+        <li><b>Matching in one place.</b> Because matching is written once over the union, adding search by external ID or changing the preview subtitle is a one-file change.</li>
+        <li><b>Contract hygiene from day one.</b> Use a shared <code>Page</code> interface for every list instead of ad hoc <code>hasNext</code> flags. Keep changes additive, and retire old fields in stages with a "to be deprecated" marker so the mobile client never breaks.</li>
+        <li><b>Data correctness.</b> Filter archived records in the CTEs, use fast JSONB checks for the archive flag, and expose <code>isPrimary</code> on associations so the UI can badge them.</li>
+      </ul>
+      <div class="trace">Covers R1 · R6</div>
+    </div>
+  </div>
+</article>
+
+<article class="dim">
+  <div class="dim-head">
+    <div class="t"><span class="eyebrow">03 · Simplification</span><h3>Mask once, at the source</h3></div>
+    <span class="pill bad">Risk · PHI exposure</span>
+  </div>
+  <div class="dim-body">
+    <div class="signals">
+      <span class="pane-label">Requirement</span>
+      <ul class="req-list">
+        <li>Mask patients without HIPAA consent (R4)</li>
+        <li>The app must tell "hidden" apart from "empty"</li>
+        <li>No call, text, or email to a masked value</li>
+      </ul>
+    </div>
+    <div class="reading">
+      <span class="pane-label">How I'd solve it</span>
+      <p>The common failure is masking twice: the backend writes its own ASCII masks (<code>******</code>, <code>***-***-****</code>) in a converter, and the frontend keeps its own copies. Real data can collide with the mask, and the UI can't reliably tell a hidden value from an empty one. I would avoid that from the start.</p>
+      <ul class="clean">
+        <li><b>Mask in the query.</b> Tag sensitive columns as <code>MaskedColumn</code>, so the masked value is produced once, in SQL. Paging, sorting, and links then all see the same value.</li>
+        <li><b>One shared constants module.</b> Put the masks in <code>@app/constants/obfuscation</code> and import it from both backend and frontend. No local copies.</li>
+        <li><b>Sentinels that can't collide.</b> Build each mask from heavy asterisks plus a zero-width space, so no real value can equal it. The UI detects a masked value with a plain set lookup and disables call, SMS, and email for it.</li>
+      </ul>
+      <div class="trace">Covers R4</div>
+    </div>
+  </div>
+</article>
+
+<article class="dim">
+  <div class="dim-head">
+    <div class="t"><span class="eyebrow">04 · Verification</span><h3>Tests, end-to-end coverage, and load</h3></div>
+    <span class="pill warn">Risk · silent regressions</span>
+  </div>
+  <div class="dim-body">
+    <div class="signals">
+      <span class="pane-label">Requirement</span>
+      <ul class="req-list">
+        <li>Permission and masking rules that must never regress (R3, R4)</li>
+        <li>A phone app where slow search is immediately visible (R1)</li>
+        <li>Two UI engineers depending on stable behavior (R6)</li>
+      </ul>
+    </div>
+    <div class="reading">
+      <span class="pane-label">How I'd solve it</span>
+      <p>Every slice ships with more test lines than code, aiming for about 2 test lines per production line. Tests run against a real Postgres test database, not mocks.</p>
+      <ul class="clean">
+        <li><b>Realistic fixture.</b> One shared fixture models a full tenant: every contact type, patients with and without consent, archived records, and primary and non-primary links.</li>
+        <li><b>Permission matrix.</b> Table-driven tests over role × contact type × link, checking both results and counts, so nothing leaks through paging.</li>
+        <li><b>End-to-end.</b> Playwright flows for the mobile app: search, patient profile, linked contacts, HCP and HCO profiles, and starting an email or SMS from a contact. One flow checks that masked values can't be contacted.</li>
+        <li><b>Latency in the request path.</b> <code>Timer</code>s at the DAO and resolver layers log per-request search time to CloudWatch from day one.</li>
+      </ul>
+      <div class="plan-box">
+        <b>Load test plan (gate before launch)</b>
+        <dl>
+          <dt>Tool</dt><dd>k6 against a staging stack with the production Lambda and database sizes</dd>
+          <dt>Dataset</dt><dd>A seeded tenant at about 2× the largest expected size, across all six types</dd>
+          <dt>Traffic</dt><dd>Ramp to peak rep concurrency, with a mix of short prefixes, full names, and external IDs</dd>
+          <dt>Targets</dt><dd>p95 &lt; 300 ms, p99 &lt; 800 ms, error rate &lt; 0.1%</dd>
+          <dt>If it misses</dt><dd>Run <code>EXPLAIN ANALYZE</code> on the slow plans and add trigram (<code>pg_trgm</code>) GIN indexes on name columns and expression indexes on JSONB names</dd>
+        </dl>
+      </div>
+      <div class="trace">Covers R1 · R3 · R4 · R6</div>
+    </div>
+  </div>
+</article>
+
+<article class="dim">
+  <div class="dim-head">
+    <div class="t"><span class="eyebrow">05 · Planning</span><h3>Ship in thin, safe slices</h3></div>
+    <span class="pill warn">Risk · blocking the UI</span>
+  </div>
+  <div class="dim-body">
+    <div class="signals">
+      <span class="pane-label">Requirement</span>
+      <ul class="req-list">
+        <li>Frontend work starts at the same time as the backend (R6)</li>
+        <li>Reviews need to stay small on a regulated codebase</li>
+      </ul>
+    </div>
+    <div class="reading">
+      <span class="pane-label">How I'd solve it</span>
+      <p>Build order keeps every step mergeable: data access with tests, then the API, then paging, permissions, masking, and profiles. Each layer lands before the UI needs it. Large items split into "Part 1 / Part 2" PRs so reviews stay small, and every change is additive, so nothing needs a revert.</p>
+      <div class="trace">Order: DAO → API → paging → access guard → masking → profile → relations → ranking + load test</div>
+    </div>
+  </div>
+</article>
+
+<section class="stack">
+  <span class="eyebrow">Delivery plan</span>
+  <h2>Each backend slice unblocks a UI slice</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Backend slice</th><th>Week</th><th>UI work it unblocks</th></tr></thead>
+      <tbody>
+        <tr><td>Searchable DAO for providers and provider contacts, with tests</td><td class="d">Wk 1</td><td>UI builds against a stubbed schema</td></tr>
+        <tr><td>Lambda and <code>searchContacts</code> GraphQL query</td><td class="d">Wk 1</td><td>Contact search screen</td></tr>
+        <tr><td>Paging, sorting, patient and caregiver search; shared <code>Page</code> interface</td><td class="d">Wk 2</td><td>Infinite scroll</td></tr>
+        <tr><td><code>ContactAccessGuard</code> per contact type and link</td><td class="d">Wk 3</td><td>Permission-aware link lists</td></tr>
+        <tr><td><code>contactProfile</code> with masking in SQL; shared mask constants</td><td class="d">Wk 4</td><td>Patient, HCP, and HCO profiles; blocking call/SMS/email on masked values</td></tr>
+        <tr><td><code>contactRelations</code> with <code>isPrimary</code> on associations</td><td class="d">Wk 5</td><td>Linked contacts list with a "Primary" badge</td></tr>
+        <tr><td>Input sanitization and user-readable errors</td><td class="d">Wk 5</td><td>Search validation messages</td></tr>
+        <tr><td>Ranking refinements, external-ID search, load test and index tuning</td><td class="d">Wk 6</td><td>Launch readiness</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="stack">
+  <span class="eyebrow">Risks</span>
+  <h2>What could go wrong, and how the design handles it</h2>
+  <div class="challenges">
+    <div class="ch"><h3>Multi-tenant, regulated platform</h3><span class="k p">Risk</span><p>Per-customer Postgres schemas and HIPAA access tiers make it easy to query the wrong tenant or show the wrong field.</p><span class="k s">Mitigation</span><p>Resolve the tenant from the request context once, and test masking and access as part of the API contract.</p></div>
+    <div class="ch"><h3>Six data shapes, one result list</h3><span class="k p">Risk</span><p>Relational rows, JSONB documents, and nested arrays have to rank and page together.</p><span class="k s">Mitigation</span><p>Per-entity CTEs that emit one common row shape, with a composite key for caregivers who have no ID.</p></div>
+    <div class="ch"><h3>Permissions before data</h3><span class="k p">Risk</span><p>Filtering after the query would leak counts and break paging.</p><span class="k s">Mitigation</span><p>The access guard decides allowed types and links first, and the SQL is built only from what is allowed.</p></div>
+    <div class="ch"><h3>Masking that stays consistent</h3><span class="k p">Risk</span><p>Mask strings defined twice, collisions with real data, and sort order based on hidden values.</p><span class="k s">Mitigation</span><p>Masking in SQL, shared sentinel constants, and masked values sorted as empty with an external-ID fallback.</p></div>
+    <div class="ch"><h3>A contract under active use</h3><span class="k p">Risk</span><p>Two frontend engineers build on the API while it is still changing.</p><span class="k s">Mitigation</span><p>Additive changes, staged deprecations, the shared <code>Page</code> interface, and pairing with the UI engineers on the profile endpoint.</p></div>
+    <div class="ch"><h3>Free-text input into SQL</h3><span class="k p">Risk</span><p>Search text feeds Postgres regex matching, so special characters could break queries.</p><span class="k s">Mitigation</span><p>Parameterized queries, escaping of Postgres and regex reserved characters, trimming, and plain-language errors the UI can show reps.</p></div>
+  </div>
+</section>
+
+<footer>
+  <span>This is a hypothetical design write-up. The scenario, names, and numbers are illustrative. Latency figures and the timeline are proposed targets, not measurements.</span>
+  <span>Written 2026-11-20.</span>
+</footer>
+
+</div>
